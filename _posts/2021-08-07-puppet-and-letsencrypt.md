@@ -3,7 +3,7 @@ layout: article
 title: Puppet and Letsencrypt
 excerpt: >
   Simple(ish) way to get letsencrypt certs and set up auto renewal.
-published: false
+published: true
 ---
 A work in progress...
 
