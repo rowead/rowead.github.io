@@ -13,7 +13,7 @@ classes:
   - nginx
   - andrewr::letsencrypt
 
-letsencrypt::email: 'rowead@gmail.com'
+letsencrypt::email: '------@gmail.com'
 letsencrypt::package_ensure: latest
 
 andrewr::letsencrypt:certonly:
