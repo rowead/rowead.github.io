@@ -68,4 +68,4 @@ class andrewr::letsencrypt {
 }
 ```
 
-Check out the results here: https://test.andrewrowe.dev
+Check out the results here: [test.andrewrowe.dev](https://test.andrewrowe.dev)
