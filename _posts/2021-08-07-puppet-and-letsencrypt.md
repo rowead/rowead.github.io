@@ -2,10 +2,20 @@
 layout: article
 title: Puppet and Letsencrypt
 excerpt: >
-  Simple(ish) way to get letsencrypt certs and set up auto renewal.
+  Simple(ish) way to get letsencrypt certs and set up auto renewals.
 published: true
+last_modified_at: 2021-08-27 08:38:00 +0800
 ---
-A work in progress...
+Using the [puppet-nginx](https://forge.puppet.com/modules/puppetlabs/nginx) and [puppet-letsencrypt](https://forge.puppet.com/modules/puppet/letsencrypt) modules, you can automate letsencrypt certificate requests and renewals.
+
+
+Here is the relevant hiera and below that is the class in my custom module I use to tie it all together.
+
+
+This sets up nginx with the two domains and redirects everything except the letsencrypt challenge URLs to https. It also serves the challenge files in a separate directory to keep your web root cleaner and easier to manage.
+
+
+You could add both domains to the one certificate but I've separated them out here as this was one of the things I was testing in this experiment.
 
 ```yaml
 ---
@@ -25,30 +35,31 @@ andrewr::letsencrypt:
           ensure: present
           domains:
             - 'test.andrewrowe.dev'
+          plugin: 'webroot'
+          webroot_paths:
+            - '/var/www/letsencrypt/'
           manage_cron: true
           cron_hour: 0
           suppress_cron_output: true
-          pre_hook_commands:
-            - 'service nginx stop'
-          post_hook_commands:
-            - 'service nginx start'
+          deploy_hook_commands:
+            - '/bin/systemctl reload nginx.service'
     'test1.andrewrowe.dev':
       certonly:
         'test1.andrewrowe.dev':
           ensure: present
           domains:
             - 'test1.andrewrowe.dev'
+          plugin: 'webroot'
+          webroot_paths:
+            - '/var/www/letsencrypt/'
           manage_cron: true
           cron_hour: 0
           suppress_cron_output: true
-          pre_hook_commands:
-            - 'service nginx stop'
-          post_hook_commands:
-            - 'service nginx start'
+          deploy_hook_commands:
+            - '/bin/systemctl reload nginx.service'
 
 nginx::ssl_protocols: 'TLSv1.2 TLSv1.3'
 nginx::ssl_ciphers: 'TLS13-CHACHA20-POLY1305-SHA256:TLS13-AES-256-GCM-SHA384:TLS13-AES-128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS'
-
 
 nginx::nginx_servers:
   'test.andrewrowe.dev':
@@ -56,7 +67,7 @@ nginx::nginx_servers:
     ssl: true
     listen_port: 80
     ssl_port: 443
-    ssl_redirect: true
+    ssl_redirect: false
     use_default_location: false
     www_root: '/var/www/test.andrewrowe.dev'
     ssl_cert: "/etc/letsencrypt/live/test.andrewrowe.dev/fullchain.pem"
@@ -66,11 +77,30 @@ nginx::nginx_servers:
     ssl: true
     listen_port: 80
     ssl_port: 443
-    ssl_redirect: true
+    ssl_redirect: false
     use_default_location: false
     www_root: '/var/www/test.andrewrowe.dev'
     ssl_cert: "/etc/letsencrypt/live/test1.andrewrowe.dev/fullchain.pem"
     ssl_key: "/etc/letsencrypt/live/test1.andrewrowe.dev/privkey.pem"
+nginx::nginx_locations:
+  'test.andrewrowe.dev letsencrypt':
+    server: 'test.andrewrowe.dev'
+    location: '/.well-known/acme-challenge/'
+    www_root: '/var/www/letsencrypt'
+  'test.andrewrowe.dev root':
+    server: 'test.andrewrowe.dev'
+    location: '/'
+    location_cfg_prepend:
+      rewrite: '^ https://$host$request_uri redirect'
+  'test1.andrewrowe.dev letsencrypt':
+    server: 'test1.andrewrowe.dev'
+    location: '/.well-known/acme-challenge/'
+    www_root: '/var/www/letsencrypt'
+  'test1.andrewrowe.dev root':
+    server: 'test1.andrewrowe.dev'
+    location: '/'
+    location_cfg_prepend:
+      rewrite: '^ https://$host$request_uri redirect'
 ```
 
 ```ruby
@@ -88,6 +118,12 @@ class andrewr::letsencrypt {
     },
     default_value => {}
   })
+
+  exec { 'create letsencript www_root':
+    path    => $::path,
+    command => 'mkdir -p /var/www/letsencrypt',
+    creates => '/var/www/letsencrypt'
+  }
 
   if ( $letsencrypt['certs'] ) {
     each($letsencrypt['certs']) |$key, $cert| {
