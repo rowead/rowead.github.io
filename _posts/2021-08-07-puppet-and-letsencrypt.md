@@ -9,13 +9,10 @@ last_modified_at: 2021-08-27 08:38:00 +0800
 Using the [puppet-nginx](https://forge.puppet.com/modules/puppetlabs/nginx) and [puppet-letsencrypt](https://forge.puppet.com/modules/puppet/letsencrypt) modules, you can automate letsencrypt certificate requests and renewals.
 
 
-Here is the relevant hiera and below that is the class in my custom module I use to tie it all together.
+The hiera and puppet class code below sets up nginx with the two domains and redirects everything except the letsencrypt challenge URLs to https. It also serves the challenge files in a separate directory to keep your web root cleaner and easier to manage.
 
 
-This sets up nginx with the two domains and redirects everything except the letsencrypt challenge URLs to https. It also serves the challenge files in a separate directory to keep your web root cleaner and easier to manage.
-
-
-You could add both domains to the one certificate but I've separated them out here as this was one of the things I was testing in this experiment.
+You could add both domains to the one certificate but I've separated them out here as this was one of the things I was testing in this experiment. This just means that the two certificates will get renewed one after the other and nginx will get reloaded after each successful renewal ie. two separate certbot runs, each running their "deploy_hook_commands" if and when they are successfully renewed.
 
 ```yaml
 ---
@@ -27,6 +24,7 @@ classes:
 letsencrypt::email: '------@gmail.com'
 letsencrypt::package_ensure: latest
 
+# my own custom module class that takes the hiera and turns it into resources
 andrewr::letsencrypt:
   certs:
     'test.andrewrowe.dev':
@@ -103,6 +101,8 @@ nginx::nginx_locations:
       rewrite: '^ https://$host$request_uri redirect'
 ```
 
+The following class allows me to specify the letsencrypt certs all in hiera so there is one place to look for the server setup.
+
 ```ruby
 # @summary A short summary of the purpose of this class
 #
@@ -135,4 +135,29 @@ class andrewr::letsencrypt {
 }
 ```
 
-Check out the results here: [test.andrewrowe.dev](https://test.andrewrowe.dev)
+The line within the each loop ```create_resources(::letsencrypt::certonly, $cert['certonly'])```
+sends our hiera to the letsencrypt module to create the certificate settings which is the equivalent of the following puppet code:
+
+```ruby
+letsencrypt::certonly { 'test.andrewrowe.dev':
+  ensure               => present,
+  domains              => ['test.andrewrowe.dev'],
+  plugin               => 'webroot',
+  webroot_paths        => ['/var/www/letsencrypt/'],
+  manage_cron          => true,
+  cron_hour            => 0,
+  suppress_cron_output => true,
+  deploy_hook_commands => ['/bin/systemctl reload nginx.service']
+}
+
+letsencrypt::certonly { 'test1.andrewrowe.dev':
+  ensure               => present,
+  domains              => ['test1.andrewrowe.dev'],
+  plugin               => 'webroot',
+  webroot_paths        => ['/var/www/letsencrypt/'],
+  manage_cron          => true,
+  cron_hour            => 0,
+  suppress_cron_output => true,
+  deploy_hook_commands => ['/bin/systemctl reload nginx.service']
+}
+```
