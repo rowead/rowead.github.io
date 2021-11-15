@@ -5,7 +5,7 @@ excerpt: >
   A command line tool to classify and describe images or extract named entities from text.
 published: true
 ---
-Classify is a tool that lets you easily run Computer Vision or Natural Language services over your own data. All you need is an account with either Microsoft or Google wih the relevant services enabled. See account setup instructions: [Google](https://github.com/googleapis/nodejs-vision#before-you-begin)  [Microsoft](https://docs.microsoft.com/en-us/azure/cognitive-services/computer-vision/quickstarts-sdk/image-analysis-client-library?tabs=visual-studio&pivots=programming-language-javascript#prerequisites).
+Classify is a tool that lets you easily run Computer Vision or Natural Language services over your own data. All you need is an account with either Microsoft or Google with the relevant services enabled. See account setup instructions: [Google](https://github.com/googleapis/nodejs-vision#before-you-begin)  [Microsoft](https://docs.microsoft.com/en-us/azure/cognitive-services/computer-vision/quickstarts-sdk/image-analysis-client-library?tabs=visual-studio&pivots=programming-language-javascript#prerequisites).
 
 The tool comes with two commands, "classify images" and "classify text". The first allows you to label and describe a folder full of images and save the results to a csv. Image descriptions are only available using Microsoft's services at the moment but both return labels relevant to the content of your images.
 
