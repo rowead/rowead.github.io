@@ -1,6 +1,6 @@
 ---
 layout: article
-title: Classify Images and text with cloud services
+title: Classify Images and Text with Cloud Services
 excerpt: >
   A command line tool to classify and describe images or extract named entities from text.
 published: true
