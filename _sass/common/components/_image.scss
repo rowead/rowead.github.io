@@ -17,3 +17,6 @@
 .image--xs {
   width: map-get($image, width-xs);
 }
+.image--fullwidth {
+  width: 100%;
+}
