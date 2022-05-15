@@ -4,8 +4,13 @@ title: Puppet and Letsencrypt
 excerpt: >
   Simple(ish) way to get letsencrypt certs and set up auto renewals.
 published: true
-last_modified_at: 2021-08-27 08:38:00 +0800
+last_modified_at: 2022-05-15 19:00:00 +0800
 ---
+### Update 2022-05-15
+In most cases you will want to let certbot handle cron and disable the "manage_cron" setting. In the case of Ubuntu, the cron is  handled by a systemd timer.
+
+---
+
 Using the [puppet-nginx](https://forge.puppet.com/modules/puppetlabs/nginx) and [puppet-letsencrypt](https://forge.puppet.com/modules/puppet/letsencrypt) modules, you can automate letsencrypt certificate requests and renewals.
 
 
@@ -36,9 +41,10 @@ andrewr::letsencrypt:
           plugin: 'webroot'
           webroot_paths:
             - '/var/www/letsencrypt/'
-          manage_cron: true
-          cron_hour: 0
-          suppress_cron_output: true
+#          manage_cron: true
+          manage_cron: false # disable for Ubuntu
+#          cron_hour: 0
+#          suppress_cron_output: true
           deploy_hook_commands:
             - '/bin/systemctl reload nginx.service'
     'test1.andrewrowe.dev':
