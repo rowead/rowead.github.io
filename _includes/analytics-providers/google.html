@@ -1,14 +1,19 @@
-{%- if site.analytics.google.tracking_id and jekyll.environment == 'production' -%}
+{%- if site.analytics.google.tracking_id -%}
 	<!-- Global site tag (gtag.js) - Google Analytics -->
 	<script async src="https://www.googletagmanager.com/gtag/js?id={{ site.analytics.google.tracking_id }}"></script>
 	<script>
-		window.dataLayer = window.dataLayer || [];
-		function gtag(){dataLayer.push(arguments);}
-		gtag('js', new Date());
+		if (!document.cookie.split('; ').find(row => row.startsWith('is_admin'))) {
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
 
-		gtag('config', '{{ site.analytics.google.tracking_id }}');
-		{% if site.analytics.google.anonymize_ip == true %}
-			gtag('config', '{{ site.analytics.google.tracking_id }}', { 'anonymize_ip': true });
-		{% endif %}
+			gtag('config', '{{ site.analytics.google.tracking_id }}');
+			{% if site.analytics.google.anonymize_ip == true %}
+				gtag('config', '{{ site.analytics.google.tracking_id }}', { 'anonymize_ip': true });
+			{% endif %}
+		}
+		else {
+			console.log('is_admin');
+		}
 	</script>
 {%- endif -%}
