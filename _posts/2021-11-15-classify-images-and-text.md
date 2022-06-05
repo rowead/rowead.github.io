@@ -5,6 +5,7 @@ excerpt: >
   A command line tool to classify and describe images or extract named entities from text.
 published: true
 cover: '/assets/images/2021-11/GM095010_jpg.jpg'
+key: '2021-11-15-classify-images-and-text'
 tags:
   - 'Machine Learning'
   - 'Computer Vision'

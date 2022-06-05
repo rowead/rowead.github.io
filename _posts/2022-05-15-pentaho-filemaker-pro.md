@@ -4,6 +4,7 @@ title: Pentaho and Filemaker Pro
 excerpt: >
   Connect to Filemaker Pro with JDBC for simple Change Data Capture.
 published: true
+key: '2021-11-15-classify-images-and-text'
 lightbox: true
 tags:
   - 'ETL'
