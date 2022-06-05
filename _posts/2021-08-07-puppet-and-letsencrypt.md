@@ -5,6 +5,10 @@ excerpt: >
   Simple(ish) way to get letsencrypt certs and set up auto renewals.
 published: true
 last_modified_at: 2022-05-15 19:00:00 +0800
+tags:
+  - 'Configuration Management'
+  - 'Operations'
+  - 'Automation'
 ---
 ### Update 2022-05-15
 In most cases you will want to let certbot handle cron and disable the "manage_cron" setting. In the case of Ubuntu, the cron is  handled by a systemd timer.

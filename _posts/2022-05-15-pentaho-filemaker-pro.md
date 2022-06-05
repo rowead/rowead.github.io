@@ -5,6 +5,8 @@ excerpt: >
   Connect to Filemaker Pro with JDBC for simple Change Data Capture.
 published: true
 lightbox: true
+tags:
+  - 'ETL'
 ---
 You can connect to almost any database out there with ETL tools like Pentaho PDI (Kettle) and the new Apache Hop
 but there are some that need a generic JDBC/ODBC connection.

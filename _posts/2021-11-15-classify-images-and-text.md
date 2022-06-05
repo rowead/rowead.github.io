@@ -4,6 +4,11 @@ title: Classify Images and Text with Cloud Services
 excerpt: >
   A command line tool to classify and describe images or extract named entities from text.
 published: true
+cover: '/assets/images/2021-11/GM095010_jpg.jpg'
+tags:
+  - 'Machine Learning'
+  - 'Computer Vision'
+  - 'nodejs'
 ---
 Classify is a tool that lets you easily run Computer Vision or Natural Language services over your own data. All you need is an account with either Microsoft or Google with the relevant services enabled. See account setup instructions: [Google](https://github.com/googleapis/nodejs-vision#before-you-begin)  [Microsoft](https://docs.microsoft.com/en-us/azure/cognitive-services/computer-vision/quickstarts-sdk/image-analysis-client-library?tabs=visual-studio&pivots=programming-language-javascript#prerequisites).
 
