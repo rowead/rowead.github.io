@@ -45,13 +45,15 @@
           {%- include snippets/get-nav-url.html path=_article.cover -%}
           {%- assign _article_cover = __return -%}
           <div class="item__image">
-          {%- if include.cover_size == 'lg' -%}
-            <img class="image image--lg" src="{{ _article_cover }}" />
-          {%- elsif include.cover_size == 'sm' -%}
-            <img class="image image--sm" src="{{ _article_cover }}" />
-          {%- else -%}
-            <img class="image" src="{{ _article_cover }}" />
-          {%- endif -%}
+            <a href="{{ _article_url }}">
+              {%- if include.cover_size == 'lg' -%}
+                <img class="image image--lg" src="{{ _article_cover }}" />
+              {%- elsif include.cover_size == 'sm' -%}
+                <img class="image image--sm" src="{{ _article_cover }}" />
+              {%- else -%}
+                <img class="image" src="{{ _article_cover }}" />
+              {%- endif -%}
+            </a>
           </div>
         {%- endif -%}
         <div class="item__content">
