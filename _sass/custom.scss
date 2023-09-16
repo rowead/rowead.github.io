@@ -5,3 +5,23 @@
 .header--dark {
   background: #00000054;
 }
+
+.article-list, .article-list article.item {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.article-list article.item .item__image {
+  margin-right: 0;
+  min-width: 100%;
+}
+
+.article-list article.item .item__image img {
+  width: 100%;
+}
+
+.article-list article.item .item__content {
+  min-width: 100% !important;
+  width: 100%;
+}
